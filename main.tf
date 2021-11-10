@@ -12,9 +12,10 @@ provider "linode" {
 }
 
 resource "linode_instance" "grafana" {
+  count           = 1
   image           = "linode/debian10"
-  label           = "grafana"
-  group           = "Terraform"
+  label           = "grafana${count.index + 1}.hegedus.wtf"
+  group           = "grafana"
   region          = var.region
   type            = "g6-standard-1"
   authorized_keys = [var.authorized_keys]
@@ -23,14 +24,15 @@ resource "linode_instance" "grafana" {
 }
 
 resource "linode_domain" "hegedus_wtf" {
-  type = "master"
-  domain = "hegedus.wtf"
+  type      = "master"
+  domain    = "hegedus.wtf"
   soa_email = var.soa_email
 }
 
 resource "linode_domain_record" "grafana" {
-  domain_id = linode_domain.hegedus_wtf.id
-  name = linode_instance.grafana.label
-  target = linode_instance.grafana.ip_address
+  count       = 1
+  domain_id   = linode_domain.hegedus_wtf.id
+  name        = linode_instance.grafana[count.index].label
+  target      = linode_instance.grafana[count.index].ip_address
   record_type = "A"
 }
