@@ -30,9 +30,15 @@ resource "linode_domain" "hegedus_wtf" {
 }
 
 resource "linode_domain_record" "grafana" {
-  count       = 1
+  count       = length(linode_instance.grafana)
   domain_id   = linode_domain.hegedus_wtf.id
   name        = linode_instance.grafana[count.index].label
   target      = linode_instance.grafana[count.index].ip_address
   record_type = "A"
+}
+
+resource "linode_rdns" "grafana" {
+  count = length(linode_instance.grafana)
+  address = linode_instance.grafana[count.index].ip_address
+  rdns = linode_instance.grafana[count.index].label
 }
