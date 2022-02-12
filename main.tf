@@ -18,8 +18,8 @@ resource "linode_domain" "hegedus_wtf" {
 }
 
 resource "linode_instance" "ghost" {
-  label             = "wbhegedus.me"
-  region            = var.region
+  label  = "wbhegedus.me"
+  region = var.region
   tags = [
     "personal",
     "blog"
@@ -60,6 +60,46 @@ resource "linode_instance" "ghost" {
     size       = 512
   }
 
+}
+
+resource "linode_instance" "salt_master" {
+  label      = "salt-master.${linode_domain.hegedus_wtf.domain}"
+  region     = var.region
+  private_ip = true
+  tags       = ["work"]
+  type       = "g6-nanode-1"
+  config {
+    kernel       = "linode/grub2"
+    label        = "My Debian 10 Disk Profile"
+    memory_limit = 0
+    root_device  = "/dev/sda"
+    run_level    = "default"
+    virt_mode    = "paravirt"
+
+    devices {
+      sda {
+        disk_label = "Debian 10 Disk"
+        volume_id  = 0
+      }
+
+      sdb {
+        disk_label = "512 MB Swap Image"
+        volume_id  = 0
+      }
+    }
+  }
+  disk {
+    filesystem = "ext4"
+    label      = "Debian 10 Disk"
+    read_only  = false
+    size       = 25088
+  }
+  disk {
+    filesystem = "swap"
+    label      = "512 MB Swap Image"
+    read_only  = false
+    size       = 512
+  }
 }
 
 resource "linode_instance" "k3s_server" {
