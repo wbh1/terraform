@@ -17,11 +17,11 @@ resource "linode_domain" "hegedus_wtf" {
   soa_email = var.soa_email
 }
 
-resource "linode_instance" "grafana" {
+resource "linode_instance" "k3s_server" {
   count           = 1
-  image           = "linode/debian10"
-  label           = "grafana${count.index + 1}.hegedus.wtf"
-  group           = "ansible"
+  image           = "linode/debian11"
+  label           = "k3s-server${count.index + 1}.hegedus.wtf"
+  group           = "k3s"
   region          = var.region
   type            = "g6-standard-1"
   authorized_keys = [var.authorized_keys]
@@ -29,42 +29,42 @@ resource "linode_instance" "grafana" {
   tags            = ["work"]
 }
 
-resource "linode_domain_record" "grafana" {
-  count       = length(linode_instance.grafana)
+resource "linode_domain_record" "k3s_server" {
+  count       = length(linode_instance.k3s_server)
   domain_id   = linode_domain.hegedus_wtf.id
-  name        = trimsuffix(linode_instance.grafana[count.index].label, ".${linode_domain.hegedus_wtf.domain}")
-  target      = linode_instance.grafana[count.index].ip_address
+  name        = trimsuffix(linode_instance.k3s_server[count.index].label, ".${linode_domain.hegedus_wtf.domain}")
+  target      = linode_instance.k3s_server[count.index].ip_address
   record_type = "A"
 }
 
-resource "linode_rdns" "grafana" {
-  count = length(linode_instance.grafana)
-  address = linode_instance.grafana[count.index].ip_address
-  rdns = linode_instance.grafana[count.index].label
+resource "linode_rdns" "k3s_server" {
+  count = length(linode_instance.k3s_server)
+  address = linode_instance.k3s_server[count.index].ip_address
+  rdns = linode_instance.k3s_server[count.index].label
 }
 
-resource "linode_instance" "vectordev" {
-  count           = 1
+resource "linode_instance" "k3s_agent" {
+  count           = 2
   image           = "linode/debian11"
-  label           = "vectordev${count.index + 1}.hegedus.wtf"
-  group           = "ansible"
+  label           = "k3s-agent${count.index + 1}.hegedus.wtf"
+  group           = "k3s-agents"
   region          = var.region
-  type            = "g6-nanode-1"
+  type            = "g6-standard-2"
   authorized_keys = [var.authorized_keys]
   root_pass       = var.root_pass
   tags            = ["work"]
 }
 
-resource "linode_domain_record" "vectordev" {
-  count       = length(linode_instance.vectordev)
+resource "linode_domain_record" "k3s_agent" {
+  count       = length(linode_instance.k3s_agent)
   domain_id   = linode_domain.hegedus_wtf.id
-  name        = trimsuffix(linode_instance.vectordev[count.index].label, ".${linode_domain.hegedus_wtf.domain}")
-  target      = linode_instance.vectordev[count.index].ip_address
+  name        = trimsuffix(linode_instance.k3s_agent[count.index].label, ".${linode_domain.hegedus_wtf.domain}")
+  target      = linode_instance.k3s_agent[count.index].ip_address
   record_type = "A"
 }
 
-resource "linode_rdns" "vectordev" {
-  count = length(linode_instance.vectordev)
-  address = linode_instance.vectordev[count.index].ip_address
-  rdns = linode_instance.vectordev[count.index].label
+resource "linode_rdns" "k3s_agent" {
+  count = length(linode_instance.k3s_agent)
+  address = linode_instance.k3s_agent[count.index].ip_address
+  rdns = linode_instance.k3s_agent[count.index].label
 }
