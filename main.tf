@@ -17,6 +17,14 @@ resource "linode_domain" "hegedus_wtf" {
   soa_email = var.soa_email
 }
 
+resource "linode_domain_record" "k3s_hegedus_wtf" {
+  count       = length(linode_instance.k3s_server)
+  name        = "*.k3s"
+  record_type = "A"
+  domain_id   = linode_domain.hegedus_wtf.id
+  target      = linode_instance.k3s_server[count.index].ip_address
+}
+
 resource "linode_instance" "ghost" {
   label  = "wbhegedus.me"
   region = var.region
