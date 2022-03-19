@@ -2,7 +2,7 @@ terraform {
   required_providers {
     linode = {
       source  = "linode/linode"
-      version = "1.16.0"
+      version = "1.26.1"
     }
   }
 }
@@ -110,13 +110,14 @@ resource "linode_instance" "salt_master" {
   }
 }
 
+// TODO: Disable swap
 resource "linode_instance" "k3s_server" {
   count           = 1
   image           = "linode/debian11"
   label           = "k3s-server${count.index + 1}.hegedus.wtf"
   group           = "k3s"
   region          = var.region
-  type            = "g6-standard-1"
+  type            = "g6-standard-2"
   authorized_keys = [var.authorized_keys]
   root_pass       = var.root_pass
   tags            = ["work"]
