@@ -21,7 +21,7 @@ module "lke-cluster" {
 data "flux_install" "main" {
   target_path = var.target_path
 }
-
+# TODO: Add patch to gotk-sync.yaml to pull apply base/flux-system
 data "flux_sync" "main" {
   target_path = var.target_path
   url         = "ssh://git@github.com/${var.github_owner}/${var.repository_name}.git"
