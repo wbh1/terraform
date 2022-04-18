@@ -17,6 +17,7 @@ module "lke-cluster" {
   source       = "./lke-cluster"
   linode_token = var.token
 }
+# TODO: Add a wildcard DNS entry for LKE cluster
 
 data "flux_install" "main" {
   target_path = var.target_path
