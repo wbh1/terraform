@@ -18,7 +18,7 @@ terraform {
     }
     flux = {
       source  = "fluxcd/flux"
-      version = ">= 0.12.2"
+      version = ">= 0.13.5"
     }
     tls = {
       source  = "hashicorp/tls"
